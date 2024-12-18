@@ -1,0 +1,48 @@
+# Parameters for the real-world runs.
+# For the documentation of the parameters, see
+# `dhf_localization_node.py`.
+
+# ROS-specific
+scan_topic: "/scan"
+odom_topic: "/odom"
+static_map_srv: "static_map"
+robot_base_frame: "base_footprint"
+odom_frame: "odom"
+scan_frame: "base_scan"
+global_frame: "map"
+transform_tolerance: 0.5
+detection_tolerance: 0.05
+
+# Filter-specific
+medh_particle_number: 100
+naedh_particle_number: 100
+
+medh_lambda_number: 10
+naedh_step_number: 10
+
+# Measurement model
+max_ray_number: 500
+laser_range_noise_std: 0.1
+
+# Motion model
+odometry_alpha_1: 0.1
+odometry_alpha_2: 0.1
+odometry_alpha_3: 0.1
+odometry_alpha_4: 0.1
+
+# Initialization
+initial_pose_x: 0.05 
+initial_pose_y: 0.075 
+initial_pose_heading: 0 
+initial_cov_x: 0.01
+initial_cov_y: 0.01
+initial_cov_heading: 0.0025
+
+# Other
+translation_threshold: 0.001
+rotation_threshold: 0.001
+export_data: False
+
+
+
+

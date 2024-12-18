@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="pkg_name" default="dhf_loc" doc="Name of the package" />
+    <arg name="node_name" default="topicexporter_node" doc="Name of the node" />
+    <arg name="bag" default="5hz_o1e-4_le-2_filtered" />
+    <arg name="param_file_name" default="default" doc="Parameter file name" />
+    <arg name="export_file_name" default="$(arg bag)" doc="Exported file name" />
+
+    <node name="rosbag" pkg="rosbag" type="play" output="screen"
+        args="$(find dhf_loc)/assets/bags/$(arg bag).bag" />
+
+    <node pkg="$(arg pkg_name)" type="topicexporter_node.py" name="topicexporter_node"
+        output="screen">
+        <param name="bag" value="$(arg bag)" />
+        <param name="pkg_name" value="$(arg pkg_name)" />
+        <param name="export_file_name" value="$(arg export_file_name)" />
+        <rosparam command="load"
+            file="$(find dhf_loc)/config/dhf_localization_node/$(arg param_file_name).yaml" />
+    </node>
+
+
+</launch>

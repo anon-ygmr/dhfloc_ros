@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="map_name" default="gt_map_01"
+        doc="Name of the map yaml file without extension, contained in the assets folder." />
+    <arg name="bag" default="5hz_o1e-4_l1e-2"
+        doc="Name of the rosbag file in the assets/bags folder. First number is the sampling rate (e.g., 5hz), 
+  then the odometry noise (e.g., 1e-4 m), then the lidar std (e.g., 1e-2 m)" />
+    <arg name="mc" default="1" doc="Monte--Carlo number, only used for naming the result file." />
+    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]" />
+    <arg name="info" default="" doc="Any additional info." />
+    <arg name="result_export_file_name" default="medh_$(arg info)_mc$(arg mc)_$(arg bag)"
+        doc="File is placed inside the assets/results directory." />
+
+
+    <param name="/use_sim_time" value="true" />
+
+    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+        <arg name="model" value="$(arg model)" />
+    </include>
+
+    <node name="map_server" pkg="map_server" type="map_server" output="screen"
+        args="$(find dhf_loc)/assets/$(arg map_name).yaml" />
+
+    <include file="$(find dhf_loc)/launch/dhf_localization_node.launch">
+        <arg name="param_file_name" value="simu"
+            doc="Parameter file located in the config/dhf_localization_node folder." />
+        <arg name="edh_type" value="medh"
+            doc="Either 'medh', 'naedh' or '', which corresponds to EKF." />
+    </include>
+
+    <node name="rosbag" pkg="rosbag" type="play" output="screen" required="true"
+        args="--clock -d 3 $(find dhf_loc)/assets/bags/$(arg bag).bag " />
+
+    <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher">
+        <param name="is_stamped" value="true" />
+        <param name="publish_frequency" value="5" />
+    </node>
+
+    <node pkg="dhf_loc" type="localization_result_exporter_node.py"
+        name="localization_result_exporter_node"
+        output="screen">
+        <param name="export_file_name" value="$(arg result_export_file_name)" />
+        <param name="truth_topic" value="/ground_truth/state" />
+    </node>
+
+
+    <node pkg="rviz" type="rviz" name="rviz"
+        args="-d $(find dhf_loc)/rviz/simu.rviz" />
+
+</launch>

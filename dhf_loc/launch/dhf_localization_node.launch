@@ -1,0 +1,16 @@
+<launch>
+    <arg name="pkg_name" default="dhf_loc" doc="Name of the package" />
+    <arg name="node_name" default="dhf_localization_node" doc="Name of the node" />
+    <arg name="param_file_name" default="default" doc="Parameter file name" />
+    <arg name="edh_type" default="medh" />
+    <arg name="venv" default="/home/user/dhf-localization/env/bin/python" />
+
+
+    <node pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)"
+        launch-prefix="$(arg venv)" output="screen">
+        <rosparam command="load"
+            file="$(find dhf_loc)/config/$(arg node_name)/$(arg param_file_name).yaml" />
+        <param name="edh_type" value="$(arg edh_type)" />
+    </node>
+
+</launch>
